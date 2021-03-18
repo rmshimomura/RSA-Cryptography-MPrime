@@ -1,4 +1,9 @@
 import math
+import os
+
+def clear():
+    if os.name == 'posix':
+        _ = os.system('clear')
 
 def findPrimes(primes, numOfPrimes):
 
@@ -17,7 +22,7 @@ def findPrimes(primes, numOfPrimes):
         if(divs < 1):
 
             if(primeNumber > 1):
-                primes.append(i)
+                primes.append(int(i))
                 pos = pos + 1
 
             primeNumber = primeNumber + 1
@@ -29,13 +34,13 @@ def findN(primes, numOfPrimes):
     aux = 1
     for i in range(numOfPrimes):
         aux *= primes[i]
-    return aux
+    return int(aux)
 
 def phiN(primes, numOfPrimes):
     aux = 1
     for i in range(numOfPrimes):
         aux *= (primes[i] - 1)
-    return aux
+    return int(aux)
 
 def findE(primes, numOfPrimes):
     count = 2
@@ -44,23 +49,35 @@ def findE(primes, numOfPrimes):
             break
         else:
             count = count + 1
-    return count
+    return int(count)
 
 def findInverseE(primes, numOfPrimes, e):
-    count = 0
-    while True:
-        if((count * e) % phiN(primes, numOfPrimes) == 1):
-            return count
-        else:
-            count = count + 1
+    return int(pow(int(e), -1, int(phiN(primes, numOfPrimes))))
 
 def findD(primes, numOfPrimes, e):
-    return findInverseE(primes, numOfPrimes, e) % phiN(primes, numOfPrimes)
+    return int(findInverseE(primes, numOfPrimes, e) % phiN(primes, numOfPrimes))
 
 def modularReduction(primes, reductions, d, numOfPrimes):
     for i in range(numOfPrimes):
-        reductions.append(d % (primes[i] - 1))
+        reductions.append(int(d % (primes[i] - 1)))
 
 def findMis(primes, reductions, Mis, encrypt, numOfPrimes):
     for i in range(numOfPrimes):
-        Mis.append(pow(encrypt, reductions[i]) % primes[i])
+        Mis.append(int(pow(encrypt, reductions[i]) % primes[i]))
+
+def decrypt(primes, Mis, numOfPrimes,  n):
+    result = 0
+    N = []
+    NLine = [] 
+    for x in range(numOfPrimes):
+        N.append(1)
+        for y in range(numOfPrimes):
+            N[x] *= primes[y]
+        N[x] /= primes[x]
+    for x in range(numOfPrimes):
+        NLine.append(int(pow(int(N[x]), -1, int(primes[x]))))
+    
+    for i in range(numOfPrimes):
+        result += Mis[i]*N[i]*NLine[i]
+
+    return int(result % n)
