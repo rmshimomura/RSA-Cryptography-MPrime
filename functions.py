@@ -22,7 +22,7 @@ def findPrimes(primes, numOfPrimes):
         if(divs < 1):
 
             if(primeNumber > 1):
-                primes.append(int(i))
+                primes.append(i)
                 pos = pos + 1
 
             primeNumber = primeNumber + 1
@@ -34,13 +34,13 @@ def findN(primes, numOfPrimes):
     aux = 1
     for i in range(numOfPrimes):
         aux *= primes[i]
-    return int(aux)
+    return aux
 
 def phiN(primes, numOfPrimes):
     aux = 1
     for i in range(numOfPrimes):
         aux *= (primes[i] - 1)
-    return int(aux)
+    return aux
 
 def findE(primes, numOfPrimes):
     count = 2
@@ -49,10 +49,10 @@ def findE(primes, numOfPrimes):
             break
         else:
             count = count + 1
-    return int(count)
+    return count
 
 def findInverseE(primes, numOfPrimes, e):
-    return int(pow(int(e), -1, int(phiN(primes, numOfPrimes))))
+    return pow(int(e), -1, int(phiN(primes, numOfPrimes)))
 
 def findD(primes, numOfPrimes, e):
     return int(findInverseE(primes, numOfPrimes, e) % phiN(primes, numOfPrimes))
@@ -63,7 +63,10 @@ def modularReduction(primes, reductions, d, numOfPrimes):
 
 def findMis(primes, reductions, Mis, encrypt, numOfPrimes):
     for i in range(numOfPrimes):
-        Mis.append(int(pow(encrypt, reductions[i]) % primes[i]))
+        Mis.append(int(pow(encrypt, reductions[i], primes[i])))
+
+def encrypt(M, e, n):
+    return int(pow(M, e, n))
 
 def decrypt(primes, Mis, numOfPrimes,  n):
     result = 0
@@ -72,12 +75,12 @@ def decrypt(primes, Mis, numOfPrimes,  n):
     for x in range(numOfPrimes):
         N.append(1)
         for y in range(numOfPrimes):
-            N[x] *= primes[y]
-        N[x] /= primes[x]
+            N[x] *= int(primes[y])
+        N[x] = int(N[x]/primes[x])
     for x in range(numOfPrimes):
-        NLine.append(int(pow(int(N[x]), -1, int(primes[x]))))
+        NLine.append(int(pow(N[x], -1, primes[x])))
     
     for i in range(numOfPrimes):
-        result += Mis[i]*N[i]*NLine[i]
+        result += (Mis[i]*N[i]*NLine[i])
 
     return int(result % n)
