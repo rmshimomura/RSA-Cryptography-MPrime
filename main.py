@@ -19,21 +19,21 @@ e = findE(primes, numberOfPrimes)
 inverse = findInverseE(primes, numberOfPrimes, e)
 d = findD(primes, numberOfPrimes, e)
 phi = phiN(primes, numberOfPrimes)
-print(f"M = {M} n = {n} e = {e} inverse = {inverse} d = {d} phiN = {phi}")
+# print(f"M = {M} n = {n} e = {e} inverse = {inverse} d = {d} phiN = {phi}")
 encrypt = encrypt(M, e, n)
 modularReduction(primes, reductions, d, numberOfPrimes)
 findMis(primes, reductions, Mis, encrypt, numberOfPrimes)
 decryptResult = decrypt(primes, Mis, numberOfPrimes, n)
 
-for x in range(numberOfPrimes):
-    print(f"primes[{x}] = {primes[x]}")
-print("========")
-for x in range(numberOfPrimes):
-    print(f"reductions[{x}] = {reductions[x]}")
-print("========")
-for x in range(numberOfPrimes):
-    print(f"Mis[{x}] = {Mis[x]}")
+# for x in range(numberOfPrimes):
+#     print(f"primes[{x}] = {primes[x]}")
+# print("========")
+# for x in range(numberOfPrimes):
+#     print(f"reductions[{x}] = {reductions[x]}")
+# print("========")
+# for x in range(numberOfPrimes):
+#     print(f"Mis[{x}] = {Mis[x]}")
 
-print("=================")
+print("=================")  
 print(f"encrypt = {encrypt}")
 print(f"decrypt = {decryptResult}")

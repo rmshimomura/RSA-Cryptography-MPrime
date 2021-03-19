@@ -80,6 +80,12 @@ def decrypt(primes, Mis, numOfPrimes,  n):
     for x in range(numOfPrimes):
         NLine.append(int(pow(N[x], -1, primes[x])))
     
+    # for i in range(numOfPrimes):
+    #     print(f"N[{i}] = {N[i]}")
+
+    # for i in range(numOfPrimes):
+    #     print(f"NLine[{i}] = {NLine[i]}")
+
     for i in range(numOfPrimes):
         result += (Mis[i]*N[i]*NLine[i])
 
