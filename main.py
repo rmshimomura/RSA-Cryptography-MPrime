@@ -1,39 +1,139 @@
-from functions import *
+import random
+import time
+import RSANPrime
 
-numberOfPrimes = int(input("For this encryption, how many primes would you like to use ? "))
-case = int(input("Would you like to insert the primes that will be used? : (0 for no | 1 for yes) "))
-clear()
-primes = []
-reductions = []
-Mis = []
-if(case == 0):
-    findPrimes(primes, numberOfPrimes)
-else:
-    for i in range(numberOfPrimes):
-        primes.append(int(input(f"Type prime {i + 1} : ")))
 
-M = int(input("Which message do you like to send? "))
-clear()
-n = findN(primes, numberOfPrimes)
-e = findE(primes, numberOfPrimes)
-inverse = findInverseE(primes, numberOfPrimes, e)
-d = findD(primes, numberOfPrimes, e)
-phi = phiN(primes, numberOfPrimes)
-# print(f"M = {M} n = {n} e = {e} inverse = {inverse} d = {d} phiN = {phi}")
-encrypt = encrypt(M, e, n)
-modularReduction(primes, reductions, d, numberOfPrimes)
-findMis(primes, reductions, Mis, encrypt, numberOfPrimes)
-decryptResult = decrypt(primes, Mis, numberOfPrimes, n)
+def main():
 
-# for x in range(numberOfPrimes):
-#     print(f"primes[{x}] = {primes[x]}")
-# print("========")
-# for x in range(numberOfPrimes):
-#     print(f"reductions[{x}] = {reductions[x]}")
-# print("========")
-# for x in range(numberOfPrimes):
-#     print(f"Mis[{x}] = {Mis[x]}")
+    testNumber = 0
 
-print("=================")  
-print(f"encrypt = {encrypt}")
-print(f"decrypt = {decryptResult}")
+    nDP = int(input("Quantos primos serao usados? "))
+    cat = int(input("Qual categoria? "))
+
+    if cat < 5 and cat > 0:
+
+        if cat == 1:
+
+            limInf = 0
+
+            limSup = 100
+
+        elif cat == 2:
+
+            limInf = 1000
+
+            limSup = 5000
+
+        elif cat == 3:
+
+            limInf = 5001
+
+            limSup = 10000
+
+        elif cat == 4:
+
+            limInf = 0
+
+            limSup = 10000
+
+    else:
+
+        print("Categoria invalida!")
+        return
+
+    arquivoResultados = open(
+        "CAT" + str(cat) + "resultadosK" + str(nDP) + ".txt", "w")
+
+    dadosFinaisResultados = open(
+        "CAT" + str(cat) + "tempoTotalK" + str(nDP) + ".txt", "w")
+
+    primos = []
+
+    mediaTempo = 0
+
+    porcentagemDeSucesso = 0
+
+    arquivoComPrimos = open("primos.txt", "r")
+
+    tempoGeralIni = time.time()
+
+    for i in range(10000):
+
+        primos.append(int(arquivoComPrimos.readline()))
+
+    arquivoComPrimos.close()
+
+
+    while(testNumber < 1000000):
+
+        comeco = time.time()
+
+        indicesEscolhidos = []
+
+        primEsc = []
+
+        indicesEscolhidos = random.sample(range(limInf, limSup), nDP)
+
+        for i in range(nDP):
+
+            primEsc.append(primos[indicesEscolhidos[i]])
+
+        primEsc.sort()
+
+
+        reductions = []
+
+        mis = []
+
+        n = RSANPrime.encontrarN(primEsc, nDP)
+
+        mens = random.randint(0, n - 1)
+
+        e = RSANPrime.encontrarE(primEsc, nDP)
+
+        d = RSANPrime.encontrarD(primEsc, nDP, e)
+
+        enc = RSANPrime.encrypt(mens, e, n)
+
+
+        RSANPrime.reducaoModular(primEsc, reductions, d, nDP)
+
+        RSANPrime.encontrarMis(
+            primEsc, reductions, mis, enc, nDP)
+
+        dec = RSANPrime.decrypt(primEsc, mis, nDP, n)
+
+
+        fim = time.time()
+
+        tempoTotal = round(fim - comeco, 3)
+
+        arquivoResultados.write(
+            f"{primEsc} {tempoTotal}s {mens} {enc} {dec} {mens == dec}\n")
+
+        mediaTempo += tempoTotal
+
+        if(mens == dec):
+
+            porcentagemDeSucesso += 1
+
+        testNumber += 1
+
+
+    tempoGeralFinal = time.time()
+
+    dadosFinaisResultados.write(
+        f"Tempo geral = {round(tempoGeralFinal - tempoGeralIni, 3)}s\n")
+
+    dadosFinaisResultados.write(
+        f"Media tempo = {mediaTempo/1000000} s por execucao\n")
+
+    dadosFinaisResultados.write(f"Sucesso = {porcentagemDeSucesso/10000}%\n")
+
+    arquivoResultados.close()
+
+    dadosFinaisResultados.close()
+
+
+if __name__ == '__main__':
+    main()
