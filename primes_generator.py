@@ -2,7 +2,7 @@ import time
 
 def write_primes():
     
-    prime_generation_time = open("tempoPrimos.txt", "a")
+    prime_generation_time = open("primes_time.txt", "a")
     time_start = time.time()
     current = 3
     n = 10000
@@ -25,7 +25,7 @@ def write_primes():
 
     file_for_store_primes.close()
     time_end = time.time()
-    prime_generation_time.write(f"{round(time_end - time_start, 3)} segundos usados na geracao de 10.000 primos\n")
+    prime_generation_time.write(f"{round(time_end - time_start, 3)} seconds used to generate 10.000 primes\n")
     prime_generation_time.close()
 
 if __name__ == '__main__':
