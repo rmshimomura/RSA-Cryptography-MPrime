@@ -1,138 +1,136 @@
 import random
 import time
-import RSANPrime
+import RSAMPrime
 
 
 def main():
 
     testNumber = 0
 
-    nDP = int(input("Quantos primos serao usados? "))
-    cat = int(input("Qual categoria? "))
+    quantity_of_primes = int(input("How many primes the test will use? "))
+    category = int(input("Which category? "))
 
-    if cat < 5 and cat > 0:
+    if category < 5 and category > 0:
 
-        if cat == 1:
+        if category == 1:
 
-            limInf = 0
+            inferior_limit = 0
 
-            limSup = 100
+            upper_limit = 100
 
-        elif cat == 2:
+        elif category == 2:
 
-            limInf = 1000
+            inferior_limit = 1000
 
-            limSup = 5000
+            upper_limit = 5000
 
-        elif cat == 3:
+        elif category == 3:
 
-            limInf = 5001
+            inferior_limit = 5001
 
-            limSup = 10000
+            upper_limit = 10000
 
-        elif cat == 4:
+        elif category == 4:
 
-            limInf = 0
+            inferior_limit = 0
 
-            limSup = 10000
+            upper_limit = 10000
 
     else:
 
-        print("Categoria invalida!")
+        print("Invalid category, plese try again.")
         return
 
-    arquivoResultados = open(
-        "CAT" + str(cat) + "resultadosK" + str(nDP) + ".txt", "w")
+    results_file = open(
+        "Category" + str(category) + "ResultsK" + str(quantity_of_primes) + ".txt", "w")
 
-    dadosFinaisResultados = open(
-        "CAT" + str(cat) + "tempoTotalK" + str(nDP) + ".txt", "w")
+    final_data_results = open(
+        "Category" + str(category) + "TotalTimeK" + str(quantity_of_primes) + ".txt", "w")
 
-    primos = []
+    primes = []
 
-    mediaTempo = 0
+    time_average = 0
 
-    porcentagemDeSucesso = 0
+    success_percentage = 0
 
-    arquivoComPrimos = open("primos.txt", "r")
+    file_with_primes = open("primes.txt", "r")
 
-    tempoGeralIni = time.time()
+    general_start_time = time.time()
 
     for i in range(10000):
 
-        primos.append(int(arquivoComPrimos.readline()))
+        primes.append(int(file_with_primes.readline()))
 
-    arquivoComPrimos.close()
-
+    file_with_primes.close()
 
     while(testNumber < 1000000):
 
-        comeco = time.time()
+        start_time = time.time()
 
-        indicesEscolhidos = []
+        chosen_indexes = []
 
-        primEsc = []
+        chosen_primes = []
 
-        indicesEscolhidos = random.sample(range(limInf, limSup), nDP)
+        chosen_indexes = random.sample(
+            range(inferior_limit, upper_limit), quantity_of_primes)
 
-        for i in range(nDP):
+        for i in range(quantity_of_primes):
 
-            primEsc.append(primos[indicesEscolhidos[i]])
+            chosen_primes.append(primes[chosen_indexes[i]])
 
-        primEsc.sort()
-
+        chosen_primes.sort()
 
         reductions = []
 
         mis = []
 
-        n = RSANPrime.encontrarN(primEsc, nDP)
+        n = RSAMPrime.find_N(chosen_primes, quantity_of_primes)
 
-        mens = random.randint(0, n - 1)
+        message = random.randint(0, n - 1)
 
-        e = RSANPrime.encontrarE(primEsc, nDP)
+        e = RSAMPrime.find_E(chosen_primes, quantity_of_primes)
 
-        d = RSANPrime.encontrarD(primEsc, nDP, e)
+        d = RSAMPrime.find_D(chosen_primes, quantity_of_primes, e)
 
-        enc = RSANPrime.encrypt(mens, e, n)
+        encryption = RSAMPrime.encrypt(message, e, n)
 
+        RSAMPrime.modular_reduction(
+            chosen_primes, reductions, d, quantity_of_primes)
 
-        RSANPrime.reducaoModular(primEsc, reductions, d, nDP)
+        RSAMPrime.find_Mis(
+            chosen_primes, reductions, mis, encryption, quantity_of_primes)
 
-        RSANPrime.encontrarMis(
-            primEsc, reductions, mis, enc, nDP)
+        decryption = RSAMPrime.decrypt(
+            chosen_primes, mis, quantity_of_primes, n)
 
-        dec = RSANPrime.decrypt(primEsc, mis, nDP, n)
+        end_time = time.time()
 
+        total_time = round(end_time - start_time, 3)
 
-        fim = time.time()
+        results_file.write(
+            f"{chosen_primes} {total_time}s {message} {encryption} {decryption} {message == decryption}\n")
 
-        tempoTotal = round(fim - comeco, 3)
+        time_average += total_time
 
-        arquivoResultados.write(
-            f"{primEsc} {tempoTotal}s {mens} {enc} {dec} {mens == dec}\n")
+        if(message == decryption):
 
-        mediaTempo += tempoTotal
-
-        if(mens == dec):
-
-            porcentagemDeSucesso += 1
+            success_percentage += 1
 
         testNumber += 1
 
+    general_end_time = time.time()
 
-    tempoGeralFinal = time.time()
+    final_data_results.write(
+        f"Total time = {round(general_end_time - general_start_time, 3)}s\n")
 
-    dadosFinaisResultados.write(
-        f"Tempo geral = {round(tempoGeralFinal - tempoGeralIni, 3)}s\n")
+    final_data_results.write(
+        f"Time average = {time_average/1000000} s per execution\n")
 
-    dadosFinaisResultados.write(
-        f"Media tempo = {mediaTempo/1000000} s por execucao\n")
+    final_data_results.write(f"Success = {success_percentage/10000}%\n")
 
-    dadosFinaisResultados.write(f"Sucesso = {porcentagemDeSucesso/10000}%\n")
+    results_file.close()
 
-    arquivoResultados.close()
-
-    dadosFinaisResultados.close()
+    final_data_results.close()
 
 
 if __name__ == '__main__':
